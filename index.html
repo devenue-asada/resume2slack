@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <!-- Bootstrap CSS -->
+        <script
+            src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+            crossorigin="anonymous"
+        ></script>
+        <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+            rel="stylesheet"
+            integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+            crossorigin="anonymous"
+        />
+        <title>Devenue</title>
+    </head>
+    <body class="bg-light m-3 fs-6 overflow-hidden">
+        <!-- 帳票作成 -->
+        <div class="reports_alert position-relative"></div>
+        <div class="text-center" style="margin: 2.25rem 0"><h3>履歴書</h3></div>
+        <div class="bg-white p-4">
+            <div id="reports_create_data">
+                <div class="container">
+                    <div class="row">
+                        <div class="input-group mb-4 col">
+                            <span class="input-group-text" id="inputGroup-sizing-default">氏名</span>
+                            <input type="text" id="name" class="form-control" placeholder="山田 太郎" />
+                        </div>
+                        <div class="input-group mb-4 col">
+                            <span class="input-group-text" id="inputGroup-sizing-default">写真</span>
+                            <input id="picture" type="file" capture="user" accept="image/*" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="input-group mb-4 col">
+                            <span class="input-group-text" id="inputGroup-sizing-default">生年月日</span>
+                            <input type="date" id="birth" class="form-control" />
+                        </div>
+                        <div class="input-group mb-4 col">
+                            <span class="input-group-text" id="inputGroup-sizing-default">最終学歴</span>
+                            <input type="text" id="academic" class="form-control" placeholder="〇〇大学" />
+                        </div>
+                    </div>
+                    <div class="container">
+                        <div class="row">
+                            <div class="input-group mb-4">
+                                <span class="input-group-text" id="inputGroup-sizing-default">希望の職種</span>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="事務" id="job-type-clerical" />
+                                <label class="form-check-label">事務</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="テスター" id="job-type-tester" />
+                                <label class="form-check-label">テスター</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="脱毛" id="job-type-beauty" />
+                                <label class="form-check-label">脱毛</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="プログラマー" id="job-type-engineer" />
+                                <label class="form-check-label">プログラマー</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="営業" id="job-type-sales" />
+                                <label class="form-check-label">営業</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="text-center">
+                <button id="submit" type="button" class="btn btn-dark" onclick="submit()" value="送信">送信</button>
+            </div>
+        </div>
+    </body>
+</html>
+<script>
+    //constructor
+    console.log(document.querySelectorAll(`[id$='job-type']`));
+    let d = new Date();
+    d.setFullYear(d.getFullYear() - 22);
+    d.setMonth(0);
+    d.setDate(1);
+    document.querySelector("#birth").setAttribute("value", d.toLocaleDateString("sv-SE"));
+    let alertElm = document.querySelector(".reports_alert");
+    const alert = (succsess, message) => {
+        alertElm.innerHTML = `<div class="alert ${
+            succsess ? "alert-primary" : "alert-danger"
+        } position-absolute end-0" style="min-width: 270px; top:-13px;" role="alert">${message}</div>`;
+        setTimeout(() => (alertElm.innerHTML = ""), 3000);
+    };
+
+    //spinner
+    const waiting = (button, buttonValue, startFlag) => {
+        button.disabled = startFlag;
+        if (startFlag) return (button.innerHTML = `<span id="spinner" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`);
+        button.querySelector("#spinner").remove();
+        button.innerHTML = buttonValue;
+    };
+
+    const submit = () => {
+        alertElm.innerHTML = "";
+        let payload = {};
+        let button = document.querySelector("#submit");
+        waiting(button, button.value, true);
+        let keys = ["name", "birth", "academic", "job-type", "picture"];
+        let text = "";
+        let image = null;
+        let blobUrl = null;
+        keys.forEach((key) => {
+            if (key == "job-type") {
+                let inputs = document.querySelectorAll(`[id^='job-type-']`);
+                inputs.forEach((input) => {
+                    if (input.checked) text += "・" + input.value + "\n";
+                });
+                return;
+            }
+            if (key == "picture") {
+                let input = document.querySelector(`#${key}`);
+                const file = input.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    //TODO: 修正
+                    reader.addEventListener("loadend", () => {
+                        console.log(reader.result);
+                        console.log(reader.readAsDataURL(reader.result));
+                    });
+                    image = reader.readAsDataURL(file);
+                    console.log(image);
+                }
+                return;
+            }
+            text += document.querySelector(`#${key}`).value + "\n";
+        });
+        console.log(image);
+        // xoxb-3538245060513-5782752890023-rwIWugucDkPMBr2mmzYqr66O
+        const url = "https://hooks.slack.com/services/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";
+        const method = "POST";
+        let data = {
+            text: text,
+            attachments: [
+                {
+                    fields: [
+                        {
+                            title: "証明写真",
+                            value: "",
+                        },
+                    ],
+                    image_url: blobUrl,
+                },
+            ],
+        };
+
+        body = JSON.stringify(data);
+        fetch(url, { method, body });
+        const message = `送信完了しました`;
+        alert(true, message);
+        waiting(button, button.value, false);
+    };
+</script>
