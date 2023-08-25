@@ -1,7 +1,7 @@
 import requests
 
-TOKEN = "xoxb-3538245060513-5782752890023-rwIWugucDkPMBr2mmzYqr66O"
-CHANNEL = "https://testchannel-vlo8440.slack.com/archives/C03F10KA7F1"
+token = "xoxb-3538245060513-5821303347312-wmyPLGlz1btNYgI5dt3DqSnv"
+CHANNEL = "#pj"
 
 #####################################
 # 画像を生成する例、アップロードするだけなら不要
@@ -22,12 +22,16 @@ CHANNEL = "https://testchannel-vlo8440.slack.com/archives/C03F10KA7F1"
 ###############
 # 画像送信ここから
 ###############
-files = {'file': open("./hoge.png", 'rb')}
-param = {
-    'token':TOKEN,
-    'channels':CHANNEL,
-    'filename':"filename",
-    'initial_comment': "initial_comment",
-    'title': "title"
+headers = {
+    'Authorization': 'Bearer xoxb-3538245060513-5821303347312-wmyPLGlz1btNYgI5dt3DqSnv',
 }
-requests.post(url="https://slack.com/api/files.upload",params=param, files=files)
+
+files = {
+    'file': open('./hoge.png', 'rb'),
+    'channels': (None, '#pj'),
+}
+
+print(open('./hoge.png', 'rb'))
+
+response = requests.post('https://slack.com/api/files.upload', headers=headers, files=files)
+print(res)
