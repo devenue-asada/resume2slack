@@ -137,28 +137,33 @@
             }
             text += document.querySelector(`#${key}`).value + "\n";
         });
-        console.log(image);
-        // xoxb-3538245060513-5782752890023-rwIWugucDkPMBr2mmzYqr66O
-        const url = "https://hooks.slack.com/services/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";
-        const method = "POST";
-        let data = {
-            text: text,
-            attachments: [
-                {
-                    fields: [
-                        {
-                            title: "証明写真",
-                            value: "",
-                        },
-                    ],
-                    image_url: blobUrl,
-                },
-            ],
-        };
+        // // const url = "https://hooks.slack.com/services/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";
+        // const url = "https://slack.com/api/files.upload";
+        // const token = "xoxb-3538245060513-5821303347312-wmyPLGlz1btNYgI5dt3DqSnv";
+        // const method = "POST";
+        // const headers = {
+        //     Authorization: `Bearer ${token}`,
+        // };
+        // let data = {
+        //     file: image,
+        //     channels: "#pj",
+        // };
 
-        body = JSON.stringify(data);
-        fetch(url, { method, body });
-        const message = `送信完了しました`;
+        // body = JSON.stringify(data);
+        // fetch(url, { method, headers, body });
+        const headers = {
+            "Content-Type": "application/x-www-form-urlencoded",
+        };
+        const url = "https://slack.com/api/files.upload";
+        const method = "POST";
+        const token = "xoxb-3538245060513-5821303347312-wmyPLGlz1btNYgI5dt3DqSnv";
+        const form = new FormData();
+        console.log("111>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+        form.append("token", token);
+        form.append("channels", "#pj");
+        // form.append("file", images);
+        fetch(url, { method, headers, form });
+
         alert(true, message);
         waiting(button, button.value, false);
     };
